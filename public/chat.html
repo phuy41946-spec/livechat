@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Chat - HITCLUB</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #f6f6f7;
+      --surface: #ffffff;
+      --text: #171717;
+      --muted: #727272;
+      --line: #e3e2ea;
+      --primary: #2400f4;
+      --primary-dark: #1700ba;
+      --accent: #ff9d00;
+      --shadow: 0 12px 30px rgba(18, 21, 35, 0.12);
+      --hero: linear-gradient(135deg, #8e74f0 0%, #c9c0ea 100%);
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ececec;
+      font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text);
+    }
+
+    .widget-shell {
+      width: 528px;
+      height: 832px;
+      background: var(--bg);
+      overflow: hidden;
+      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.18);
+      position: relative;
+    }
+
+    .screen {
+      display: none;
+      width: 100%;
+      height: 100%;
+      flex-direction: column;
+      background: var(--bg);
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    .scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .scroll-area::-webkit-scrollbar {
+      display: none;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 50%;
+      background: #e4e6eb;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #1f1f1f;
+      cursor: pointer;
+    }
+
+    .icon-btn svg {
+      width: 21px;
+      height: 21px;
+    }
+
+    .home-top {
+      background: var(--hero);
+      padding: 34px 24px 26px;
+    }
+
+    .hero-title {
+      font-size: 46px;
+      line-height: 1.03;
+      letter-spacing: -0.03em;
+      font-weight: 900;
+      color: #161616;
+      max-width: 360px;
+      text-transform: uppercase;
+    }
+
+    .home-body {
+      padding: 0 18px 0;
+      margin-top: -4px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      padding: 24px 18px 18px;
+      border: 1px solid rgba(224, 223, 232, 0.9);
+    }
+
+    .agent-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .agent-avatar-wrap {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #b6b6b6, #e9e9e9);
+    }
+
+    .agent-avatar-wrap img,
+    .pill-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .online-dot {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #2ea84d;
+      border: 2px solid #fff;
+    }
+
+    .agent-copy small {
+      display: block;
+      color: #757575;
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+
+    .agent-copy strong {
+      display: block;
+      font-size: 20px;
+      line-height: 1.18;
+      font-weight: 500;
+    }
+
+    .cta-btn {
+      width: 100%;
+      border: 2px solid #ffbb0a;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 18px;
+      height: 62px;
+      font-size: 19px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    }
+
+    .cta-btn svg {
+      width: 26px;
+      height: 26px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 19px;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+    .section-title .circle {
+      width: 28px;
+      height: 28px;
+      border: 3px solid #1d1d1d;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .lookup-copy {
+      color: #7b7b7b;
+      font-size: 18px;
+      line-height: 1.38;
+      margin-bottom: 18px;
+    }
+
+    .lookup-btn {
+      width: 100%;
+      height: 58px;
+      border: none;
+      border-radius: 17px;
+      background: #dedee9;
+      color: #272372;
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .bottom-nav-wrap {
+      margin-top: auto;
+      padding: 18px 18px 10px;
+    }
+
+    .bottom-nav {
+      background: var(--surface);
+      border-radius: 30px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(224, 223, 232, 0.95);
+      display: flex;
+      padding: 14px 12px 12px;
+      justify-content: space-around;
+    }
+
+    .nav-item {
+      border: none;
+      background: transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 7px;
+      color: #6e6e6e;
+      font-size: 15px;
+      cursor: pointer;
+      min-width: 92px;
+    }
+
+    .nav-item svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .nav-item.active {
+      color: #171717;
+    }
+
+    .powered-livechat {
+      text-align: center;
+      color: #767676;
+      font-size: 13px;
+      padding: 10px 0 8px;
+    }
+
+    .powered-livechat strong {
+      color: #1d1d1d;
+      font-weight: 700;
+    }
+
+    .powered-livechat .logo-box {
+      display: inline-block;
+      width: 13px;
+      height: 13px;
+      border-radius: 4px;
+      background: #ff6d1a;
+      vertical-align: -2px;
+      margin: 0 4px 0 2px;
+      position: relative;
+    }
+
+    .powered-livechat .logo-box::after {
+      content: "";
+      position: absolute;
+      inset: 2px;
+      border: 2px solid #fff;
+      border-top-color: transparent;
+      border-left-color: transparent;
+      border-radius: 3px;
+    }
+
+    .handle {
+      width: 34px;
+      height: 4px;
+      border-radius: 99px;
+      background: #999;
+      margin: 0 auto 4px;
+      opacity: 0.7;
+    }
+
+    .composer-pencil {
+      position: absolute;
+      right: 8px;
+      bottom: 6px;
+      color: #9c9c9c;
+      opacity: 0.9;
+    }
+
+    .chat-header {
+      display: flex;
+      align-items: center;
+      padding: 16px 14px 8px;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      z-index: 2;
+    }
+
+    .agent-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: #fff;
+      border-radius: 999px;
+      padding: 6px 16px 6px 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1;
+    }
+
+    .pill-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #b6b6b6, #ececec);
+    }
+
+    .agent-pill strong {
+      font-size: 16px;
+      line-height: 1.2;
+      font-weight: 800;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chat-scroll {
+      padding: 12px 18px 8px;
+      flex: 1;
+      overflow-y: auto;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .chat-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .bubble-row,
+    .message-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .left-dot-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: var(--primary);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 8px;
+    }
+
+    .left-dot-avatar svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .message-stack {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .prechat-panel {
+      background: #fff;
+      border-radius: 20px;
+      padding: 18px 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      border: 1px solid #eaeaea;
+      overflow: hidden;
+    }
+
+    .prechat-copy {
+      font-size: 16px;
+      line-height: 1.5;
+      color: #1a1a1a;
+    }
+
+    .prechat-copy strong {
+      font-weight: 700;
+    }
+
+    .prechat-copy form {
+      margin-top: 24px;
+    }
+
+    .prechat-copy a {
+      font-weight: 700;
+      color: #111;
+      text-decoration: underline;
+    }
+
+    .prechat-copy .warn-x {
+      color: #e61919;
+      font-weight: 700;
+    }
+
+    .form-block {
+      margin-top: 24px;
+    }
+
+    .form-label {
+      font-size: 15px;
+      display: block;
+      margin-bottom: 8px;
+      color: #1a1a1a;
+    }
+
+    .form-label span {
+      color: #e61919;
+    }
+
+    .name-input {
+      width: 100%;
+      height: 44px;
+      border-radius: 8px;
+      border: 1px solid #767676;
+      padding: 0 12px;
+      font-size: 15px;
+      outline: none;
+      font-family: inherit;
+      background: #fff;
+    }
+
+    .name-input:focus {
+      border-color: var(--primary);
+    }
+
+    .composer-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(36, 0, 244, 0.12);
+    }
+
+    .primary-action {
+      width: 100%;
+      height: 48px;
+      margin-top: 20px;
+      border: none;
+      border-radius: 12px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .message-row {
+      max-width: 88%;
+      margin-top: 10px;
+      animation: fade-in 0.2s ease;
+    }
+
+    .message-row.admin,
+    .message-row.system,
+    .message-row.bot {
+      align-self: flex-start;
+    }
+
+    .message-row.visitor {
+      align-self: flex-end;
+      margin-left: auto;
+      flex-direction: row-reverse;
+    }
+
+    .message-row.visitor .msg-body {
+      align-items: flex-end;
+    }
+
+    .message-row.visitor .msg-time {
+      text-align: right;
+    }
+
+    .msg-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      background: linear-gradient(135deg, #ab9fff, #5d43ff);
+      margin-top: 4px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .message-row.visitor .msg-avatar {
+      background: #1b1b1b;
+    }
+
+    .msg-body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .msg-bubble {
+      padding: 12px 15px;
+      border-radius: 16px;
+      font-size: 15px;
+      line-height: 1.48;
+      word-break: break-word;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .message-row.admin .msg-bubble,
+    .message-row.system .msg-bubble,
+    .message-row.bot .msg-bubble {
+      background: #fff;
+      color: #171717;
+      border-bottom-left-radius: 4px;
+    }
+
+    .message-row.visitor .msg-bubble {
+      background: var(--primary);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+
+    .msg-time {
+      font-size: 11px;
+      color: #8b8b8b;
+      margin-top: 5px;
+      padding: 0 4px;
+    }
+
+    .quick-replies {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .qr-btn {
+      background: #fff;
+      color: #1a1a1a;
+      border: 1.5px solid #d5d5d5;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .qr-btn:hover {
+      background: #f0f0f0;
+      border-color: #999;
+    }
+
+    .typing-indicator {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+      border-radius: 16px;
+      padding: 10px 14px;
+      width: fit-content;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      color: #8b8b8b;
+      margin: 10px 0 0 40px;
+    }
+
+    .typing-indicator.show {
+      display: inline-flex;
+    }
+
+    .typing-dots {
+      display: inline-flex;
+      gap: 4px;
+    }
+
+    .typing-dots span {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #a6a6a6;
+      animation: pulse 1.2s infinite;
+    }
+
+    .typing-dots span:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+
+    .typing-dots span:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+
+    .closed-banner {
+      display: none;
+      margin: 10px 18px 0;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #fff3d8;
+      color: #7f5a00;
+      font-size: 14px;
+    }
+
+    .composer {
+      padding: 10px 14px 8px;
+      background: var(--bg);
+      position: relative;
+    }
+
+    .composer.hidden {
+      display: none;
+    }
+
+    .composer-inner {
+      background: #fff;
+      border-radius: 18px;
+      padding: 10px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+    }
+
+    .composer-input {
+      flex: 1;
+      border: 1px solid #dcdcdc;
+      border-radius: 12px;
+      height: 44px;
+      padding: 0 14px;
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+    }
+
+    .send-btn {
+      width: 44px;
+      height: 44px;
+      border: none;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .send-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @keyframes pulse {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.55; }
+      30% { transform: translateY(-3px); opacity: 1; }
+    }
+
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 560px) {
+      body {
+        background: var(--bg);
+      }
+
+      .widget-shell {
+        width: 100vw;
+        height: 100vh;
+        box-shadow: none;
+      }
+
+      .hero-title {
+        font-size: 44px;
+      }
+
+      .prechat-panel {
+        padding: 24px 18px;
+      }
+
+      .prechat-copy {
+        font-size: 17px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="widget-shell">
+    <section class="screen active" id="homeScreen">
+      <div class="scroll-area">
+        <div class="home-top">
+          <h1 class="hero-title">TÊN MIỀN<br>MỚI NHẤT<br>HITCLUB.SC</h1>
+        </div>
+
+        <div class="home-body">
+          <article class="card">
+            <div class="agent-row">
+              <div class="agent-avatar-wrap">
+                <img src="https://cdn.livechat-files.com/api/file/lc/img/14863323/bdb7264d78b87e071a4cd60f7fc6b862.jpeg" alt="Vision Nguyễn">
+                <span class="online-dot"></span>
+              </div>
+              <div class="agent-copy">
+                <small>Vision Nguyễn</small>
+                <strong>HITCLUB Xin chào Quý Khách!</strong>
+              </div>
+            </div>
+
+            <button class="cta-btn" id="talkNowBtn" type="button">
+              Cùng trò chuyện
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 2L11 13"></path>
+                <path d="M22 2l-7 20-4-9-9-4 20-7z"></path>
+              </svg>
+            </button>
+          </article>
+
+          <article class="card">
+            <div class="section-title">
+              <span class="circle">?</span>
+              <span>HITCLUB - Tra Cứu</span>
+            </div>
+            <p class="lookup-copy">Quý khách có thể tìm kiếm trước câu trả lời tại đây.</p>
+            <button class="lookup-btn" type="button">Gõ để tìm kiếm</button>
+          </article>
+        </div>
+      </div>
+
+      <div class="bottom-nav-wrap">
+        <nav class="bottom-nav">
+          <button class="nav-item active" type="button">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1V10l9-7z"></path></svg>
+            <span>Nhà</span>
+          </button>
+          <button class="nav-item" id="navTalkBtn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6A8.38 8.38 0 0 1 12.5 3h.5A8.48 8.48 0 0 1 21 11.5z"></path></svg>
+            <span>Trò chuyện</span>
+          </button>
+          <button class="nav-item" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M9.09 9a3 3 0 0 1 5.82 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg>
+            <span>Trợ giúp</span>
+          </button>
+        </nav>
+
+        <div class="powered-livechat">Powered by <span class="logo-box"></span><strong>LiveChat</strong></div>
+        <div class="handle"></div>
+      </div>
+
+      <div class="composer-pencil">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg>
+      </div>
+    </section>
+
+    <section class="screen" id="chatScreen">
+      <div class="chat-header">
+        <div class="header-actions">
+          <button class="icon-btn" id="backBtn" type="button" aria-label="Quay lại">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7"></path>
+            </svg>
+          </button>
+          
+          <button class="icon-btn" id="menuBtn" type="button" aria-label="Mở trình đơn">
+            <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle></svg>
+          </button>
+        </div>
+
+        <div class="agent-pill">
+          <div class="pill-avatar">
+            <img src="https://cdn.livechat-files.com/api/file/lc/img/14863323/bdb7264d78b87e071a4cd60f7fc6b862.jpeg" alt="Vision Nguyễn">
+            <span class="online-dot"></span>
+          </div>
+          <strong id="agentName">Vision Nguyễn</strong>
+        </div>
+      </div>
+
+      <div class="chat-scroll" id="chatScroll">
+        <div class="bubble-row" id="prechatRow">
+          <div class="left-dot-avatar">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.33 0-8 2.17-8 5v1h16v-1c0-2.83-3.67-5-8-5z"></path></svg>
+          </div>
+          <div class="message-stack">
+            <div class="prechat-panel" id="prechatPanel">
+              <div class="prechat-copy">
+                <strong><a href="#">HITCLUB.SC</a> - HỖ TRỢ 24/7 QUA LIVECHAT</strong><br>
+                � Nạp/Rút xử lý nhanh – Ổn định – An toàn<br>
+                ✅ Chỉ có tại <strong><a href="#">HITCLUB.SC</a></strong> mới đảm bảo an toàn &amp; chính chủ.<br>
+                ❌ <strong>CẢNH BÁO:</strong> Bất kỳ trang nào không có <strong>LIVECHAT</strong> đều là <strong>GIẢ MẠO/LỪA ĐẢO.</strong><br>
+                👉 Truy cập và tải <strong><a href="#">App</a></strong> ngay để nhận diện đúng cổng game!<br>
+                📲 Cài đặt <strong>1.1.1.1</strong> để luôn truy cập được HIT.CLUB
+
+                <div class="form-block">
+                  <form id="prechatForm">
+                    <label class="form-label" for="visitorName">Tên quý khách:<span>*</span></label>
+                    <input class="name-input" id="visitorName" type="text" maxlength="50" autocomplete="name" required>
+                    <button class="primary-action" type="submit">Bắt đầu chat</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            <div class="typing-indicator" id="typingIndicator">
+              <span class="typing-dots"><span></span><span></span><span></span></span>
+              <span>Đang nhập...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="closed-banner" id="chatClosedBanner">Cuộc trò chuyện đã kết thúc. Cảm ơn bạn đã liên hệ.</div>
+
+      <div class="composer hidden" id="composer">
+        <div class="composer-inner">
+          <input class="composer-input" id="messageInput" type="text" placeholder="Nhập tin nhắn..." maxlength="2000" autocomplete="off">
+          <button class="send-btn" id="sendBtn" type="button" aria-label="Gửi">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 2L11 13"></path>
+              <path d="M22 2l-7 20-4-9-9-4 20-7z"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="powered-livechat">Powered by <span class="logo-box"></span><strong>LiveChat</strong></div>
+      <div class="handle"></div>
+      <div class="composer-pencil">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg>
+      </div>
+    </section>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io('/visitor');
+    let conversationId = localStorage.getItem('lc_conversation_id') || null;
+    let hasStartedChat = false;
+
+    const homeScreen = document.getElementById('homeScreen');
+    const chatScreen = document.getElementById('chatScreen');
+    const talkNowBtn = document.getElementById('talkNowBtn');
+    const navTalkBtn = document.getElementById('navTalkBtn');
+    const backBtn = document.getElementById('backBtn');
+    const prechatPanel = document.getElementById('prechatPanel');
+    const prechatRow = document.getElementById('prechatRow');
+    const prechatForm = document.getElementById('prechatForm');
+    const chatScroll = document.getElementById('chatScroll');
+    const typingIndicator = document.getElementById('typingIndicator');
+    const composer = document.getElementById('composer');
+    const messageInput = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const chatClosedBanner = document.getElementById('chatClosedBanner');
+
+    function openTalkView() {
+      if (conversationId || hasStartedChat) {
+        showConversation();
+        requestAnimationFrame(() => messageInput.focus());
+        return;
+      }
+
+      showPrechat();
+    }
+
+    function showHome() {
+      homeScreen.classList.add('active');
+      chatScreen.classList.remove('active');
+      hideTyping();
+    }
+
+    function showPrechat() {
+      homeScreen.classList.remove('active');
+      chatScreen.classList.add('active');
+      prechatPanel.classList.remove('hidden');
+      prechatRow.classList.remove('hidden');
+      composer.classList.add('hidden');
+      hideTyping();
+      chatClosedBanner.style.display = 'none';
+    }
+
+    function showConversation() {
+      homeScreen.classList.remove('active');
+      chatScreen.classList.add('active');
+      prechatPanel.classList.add('hidden');
+      prechatRow.classList.add('hidden');
+      composer.classList.remove('hidden');
+      hideTyping();
+      chatClosedBanner.style.display = 'none';
+    }
+
+    talkNowBtn.addEventListener('click', openTalkView);
+    navTalkBtn.addEventListener('click', openTalkView);
+    backBtn.addEventListener('click', showHome);
+
+    if (conversationId) {
+      hasStartedChat = true;
+      socket.emit('start_chat', { conversationId });
+    }
+    showHome();
+
+    prechatForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const name = document.getElementById('visitorName').value.trim();
+      if (!name) return;
+
+      hasStartedChat = true;
+      showConversation();
+      socket.emit('start_chat', { name, email: '' });
+      requestAnimationFrame(() => messageInput.focus());
+    });
+
+    socket.on('chat_history', (data) => {
+      conversationId = data.conversationId;
+      localStorage.setItem('lc_conversation_id', conversationId);
+
+      const oldMessages = chatScroll.querySelectorAll('.message-row');
+      oldMessages.forEach((node) => node.remove());
+
+      data.messages.forEach(renderMessage);
+      scrollToBottom();
+    });
+
+    socket.on('new_message', (message) => {
+      renderMessage(message);
+      hideTyping();
+      scrollToBottom();
+    });
+
+    socket.on('admin_typing', () => {
+      if (prechatPanel.classList.contains('hidden')) {
+        prechatRow.classList.remove('hidden');
+      }
+      typingIndicator.classList.add('show');
+      scrollToBottom();
+      clearTimeout(window.__typingTimer);
+      window.__typingTimer = setTimeout(hideTyping, 2200);
+    });
+
+    socket.on('bot_typing', () => {
+      typingIndicator.classList.add('show');
+      scrollToBottom();
+      clearTimeout(window.__typingTimer);
+      window.__typingTimer = setTimeout(hideTyping, 3000);
+    });
+
+    socket.on('conversation_closed', () => {
+      chatClosedBanner.style.display = 'block';
+      composer.classList.add('hidden');
+      localStorage.removeItem('lc_conversation_id');
+      conversationId = null;
+      hasStartedChat = false;
+    });
+
+    sendBtn.addEventListener('click', sendMessage);
+    messageInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        sendMessage();
+      }
+    });
+
+    let lastTypingEmit = 0;
+    messageInput.addEventListener('input', () => {
+      if (!conversationId) return;
+      if (Date.now() - lastTypingEmit > 1500) {
+        socket.emit('typing', { conversationId });
+        lastTypingEmit = Date.now();
+      }
+    });
+
+    function sendMessage() {
+      const content = messageInput.value.trim();
+      if (!content || !conversationId) return;
+      socket.emit('send_message', { conversationId, content });
+      messageInput.value = '';
+    }
+
+    function renderMessage(message) {
+      // Hide all previous quick-replies
+      chatScroll.querySelectorAll('.quick-replies').forEach(qr => {
+        qr.style.display = 'none';
+      });
+
+      const row = document.createElement('div');
+      row.className = 'message-row ' + message.sender_type;
+
+      const timeLabel = formatTime(message.created_at);
+
+      let contentText = message.content;
+      let optionsHtml = '';
+
+      if (message.sender_type === 'bot' || message.sender_type === 'system') {
+        try {
+          const parsed = JSON.parse(message.content);
+          contentText = parsed.text;
+          if (parsed.options && parsed.options.length > 0) {
+            const btns = parsed.options.map(opt => 
+              `<button class="qr-btn" data-next="${escapeHtml(opt.next)}">${escapeHtml(opt.text)}</button>`
+            ).join('');
+            optionsHtml = `<div class="quick-replies">${btns}</div>`;
+          }
+        } catch(e) {
+          // not json, normal text
+        }
+      }
+
+      // Convert line breaks to <br>
+      contentText = escapeHtml(contentText).replace(/\n/g, '<br>');
+
+      if (message.sender_type === 'visitor') {
+        row.innerHTML = `
+          <div class="msg-body">
+            <div class="msg-bubble">${contentText}</div>
+            <div class="msg-time">Đã đọc</div>
+          </div>`;
+      } else {
+        const avatarUrl = 'https://cdn.livechat-files.com/api/file/lc/img/14863323/bdb7264d78b87e071a4cd60f7fc6b862.jpeg';
+        row.innerHTML = `
+          <div class="msg-avatar" style="background:none; overflow:hidden">
+            <img src="${avatarUrl}" style="width:100%; height:100%; object-fit:cover;">
+          </div>
+          <div class="msg-body">
+            <div class="msg-bubble">${contentText}</div>
+            ${optionsHtml}
+          </div>`;
+          
+        // Bind quick reply click events
+        if (optionsHtml !== '') {
+          setTimeout(() => {
+            const buttons = row.querySelectorAll('.qr-btn');
+            buttons.forEach(btn => {
+              btn.addEventListener('click', function() {
+                const actionKey = this.getAttribute('data-next');
+                const text = this.innerText;
+                if (!conversationId) return;
+                
+                // Remove all buttons in this message to prevent double-clicking
+                row.querySelector('.quick-replies').style.display = 'none';
+                
+                socket.emit('send_message', { 
+                  conversationId, 
+                  content: text,
+                  botActionKey: actionKey
+                });
+              });
+            });
+          }, 0);
+        }
+      }
+
+      chatScroll.appendChild(row);
+    }
+
+    function hideTyping() {
+      typingIndicator.classList.remove('show');
+      if (prechatPanel.classList.contains('hidden')) {
+        prechatRow.classList.add('hidden');
+      }
+    }
+
+    function scrollToBottom() {
+      requestAnimationFrame(() => {
+        chatScroll.scrollTop = chatScroll.scrollHeight;
+      });
+    }
+
+    function formatTime(value) {
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return '';
+      return date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function escapeHtml(text) {
+      const element = document.createElement('div');
+      element.textContent = text || '';
+      return element.innerHTML;
+    }
+  </script>
+</body>
+</html>

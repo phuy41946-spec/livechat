@@ -1,0 +1,14 @@
+node_modules/
+*.db
+.env
+.env.local
+.DS_Store
+*.log
+bot-tree/
+screenshots/
+scrape-*.js
+screenshot-*.js
+*.png
+livechat-dom.html
+inspect-bot.js
+map-bot.js
