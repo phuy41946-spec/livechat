@@ -941,6 +941,30 @@
     }
     showHome();
 
+    // If server requested auto pre-chat open (via injected script), open prechat and focus name
+    try {
+      if (localStorage.getItem && localStorage.getItem('lc_auto_prechat') === '1') {
+        localStorage.removeItem('lc_auto_prechat');
+        if (typeof showPrechat === 'function') {
+          showPrechat();
+          setTimeout(() => {
+            const vn = document.getElementById('visitorName');
+            if (vn) vn.focus();
+          }, 80);
+        } else {
+          // fallback: try clicking talk button
+          const btn = document.getElementById('talkNowBtn') || document.getElementById('navTalkBtn');
+          if (btn) {
+            btn.click();
+            setTimeout(() => {
+              const vn = document.getElementById('visitorName');
+              if (vn) vn.focus();
+            }, 300);
+          }
+        }
+      }
+    } catch (e) { /* ignore */ }
+
     prechatForm.addEventListener('submit', (event) => {
       event.preventDefault();
       const name = document.getElementById('visitorName').value.trim();

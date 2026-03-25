@@ -5,6 +5,7 @@ const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
+const fs = require('fs');
 const crypto = require('crypto');
 
 const database = require('./db');
@@ -47,7 +48,23 @@ app.get('/', (req, res) => {
 
 // LiveChat-style URL
 app.get('/licence/14863323/v2/open_chat.cgi', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'chat.html'));
+  // Serve the chat widget but inject a small script that auto-opens the chat
+  try {
+    const htmlPath = path.join(__dirname, 'public', 'chat.html');
+    let content = fs.readFileSync(htmlPath, 'utf8');
+    const injector = `\n<script>\n  // Auto-open pre-chat form when this URL is visited\n  window.addEventListener('DOMContentLoaded', () => {\n    try {\n      if (typeof showPrechat === 'function') {\n        // If the chat code defines showPrechat, call it\n        showPrechat();\n      } else {\n        // Otherwise set a flag that client-side code can detect and open prechat on load\n        localStorage.setItem('lc_auto_prechat', '1');\n      }\n    } catch(e) { /* silent */ }\n  });\n</script>\n`;
+    // Insert injector before closing </body>, if present
+    if (content.indexOf('</body>') !== -1) {
+      content = content.replace(/<\/body>/i, injector + '</body>');
+    } else {
+      content += injector;
+    }
+    res.setHeader('Content-Type', 'text/html');
+    res.send(content);
+  } catch (err) {
+    console.error('Error serving auto-open chat page:', err);
+    res.status(500).send('Server error');
+  }
 });
 
 // Admin login page
