@@ -45,6 +45,11 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'chat.html'));
 });
 
+// LiveChat-style URL
+app.get('/licence/14863323/v2/open_chat.cgi', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'chat.html'));
+});
+
 // Admin login page
 app.get('/admin/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin-login.html'));
